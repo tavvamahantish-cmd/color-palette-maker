@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -77,19 +78,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Chroma Studio — Colour Picker" },
+      { name: "description", content: "Pick, save and generate harmonious colour palettes." },
+      { property: "og:title", content: "Chroma Studio — Colour Picker" },
+      { property: "og:description", content: "Pick, save and generate harmonious colour palettes." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Space+Grotesk:wght@400;500;700&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -106,7 +107,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
         {children}
         <Scripts />
       </body>
@@ -116,11 +117,27 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const linkCls = "px-3 py-1.5 rounded-full text-sm font-medium hover:bg-secondary";
+  const active = { className: "px-3 py-1.5 rounded-full text-sm font-medium bg-foreground text-background" };
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <header className="border-b border-border">
+        <nav className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
+          <Link to="/" className="text-2xl font-extrabold" style={{ fontFamily: "Fraunces, serif" }}>
+            Chroma<span className="text-primary">.</span>
+          </Link>
+          <div className="flex gap-1">
+            <Link to="/" className={linkCls} activeProps={active} activeOptions={{ exact: true }}>Picker</Link>
+            <Link to="/ai" className={linkCls} activeProps={active}>AI Harmony</Link>
+            <Link to="/palettes" className={linkCls} activeProps={active}>Saved</Link>
+          </div>
+        </nav>
+      </header>
+      <main className="mx-auto max-w-5xl px-4 py-8">
+        <Outlet />
+      </main>
+      <Toaster />
     </QueryClientProvider>
   );
 }
